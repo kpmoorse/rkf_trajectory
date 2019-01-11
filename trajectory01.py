@@ -27,7 +27,7 @@ num_pts = int(period*num_cycle/dt)
 t = dt*scipy.arange(num_pts)
 
 # Calculate nonlinear phase
-frequency = 15 - abs(t - 15)
+frequency = (15 - abs(t - 15))/5
 phase = numpy.cumsum(frequency)*dt
 
 position = 80*scipy.cos(phase)
