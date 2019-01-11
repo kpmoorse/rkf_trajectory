@@ -3,6 +3,7 @@ from __future__ import print_function
 import sys
 import time
 import scipy
+import numpy
 import matplotlib.pyplot as plt
 
 from autostep_proxy import AutostepProxy
@@ -24,7 +25,12 @@ period = 5.0
 dt = AutostepProxy.TrajectoryDt
 num_pts = int(period*num_cycle/dt)
 t = dt*scipy.arange(num_pts)
-position = 80*scipy.cos(2.0*scipy.pi*t/period) - 50*scipy.cos(4.0*scipy.pi*t/period)
+
+# Calculate nonlinear phase
+frequency = 15 - abs(t - 15)
+phase = numpy.cumsum(frequency)*dt
+
+position = 80*scipy.cos(phase)
 plt.plot(t, position)
 plt.grid('on')
 plt.xlabel('t (sec)')
