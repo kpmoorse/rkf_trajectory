@@ -26,13 +26,17 @@ dt = AutostepProxy.TrajectoryDt
 num_pts = int(period*num_cycle/dt)
 t = dt*scipy.arange(num_pts)
 
-# Calculate nonlinear phase
-max_freq = 3 # rad/sec
-tau = num_cycle * period
-frequency = max_freq * (1 - numpy.abs(2*t/tau - 1))
-phase = numpy.cumsum(frequency)*dt
 
-position = 80*scipy.cos(phase)
+# Calculate triangle-wave freq ramp
+def cos_ramp(t, max_freq):
+    tau = t[-1]
+    frequency = max_freq * (1 - numpy.abs(2*t/tau - 1))
+    phase = numpy.cumsum(frequency)*dt
+    x = 80*scipy.cos(phase)
+    return x
+
+
+position = cos_ramp(t, 3)
 plt.plot(t, position)
 plt.grid('on')
 plt.xlabel('t (sec)')
