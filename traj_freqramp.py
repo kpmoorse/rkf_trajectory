@@ -5,6 +5,7 @@ import time
 import scipy
 import numpy
 import matplotlib.pyplot as plt
+import traj
 
 from autostep_proxy import AutostepProxy
 
@@ -28,15 +29,13 @@ t = dt*scipy.arange(num_pts)
 
 
 # Calculate triangle-ramp frequency profile
-def cos_ramp(t, max_freq):
+def freq_ramp(t, max_freq):
     tau = t[-1]
     frequency = max_freq * (1 - numpy.abs(2*t/tau - 1))
-    phase = numpy.cumsum(frequency)*dt
-    x = 80*scipy.cos(phase)
-    return x
+    return frequency
 
 
-position = cos_ramp(t, 3)
+position = 80*numpy.cos(traj.phase(freq_ramp(t, 3)), dt)
 plt.plot(t, position)
 plt.grid('on')
 plt.xlabel('t (sec)')

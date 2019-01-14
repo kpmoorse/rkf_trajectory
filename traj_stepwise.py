@@ -5,6 +5,7 @@ import time
 import scipy
 import numpy
 import matplotlib.pyplot as plt
+import traj
 
 from autostep_proxy import AutostepProxy
 
@@ -28,17 +29,15 @@ t = dt*numpy.arange(num_pts)
 
 
 # Calculate stepwise frequency profile
-def cos_step(t, freq_list):
+def freq_step(t, freq_list):
     step_ix = numpy.insert(numpy.cumsum([int(freq[0]/dt) for freq in freq_list]), 0, 0)
     frequency = t * 0
     for i in range(len(freq_list)):
         frequency[step_ix[i]:step_ix[i+1]] = freq_list[i][1]
-    phase = numpy.cumsum(frequency)*dt
-    x = 80*numpy.cos(phase)
-    return x
+    return frequency
 
 
-position = cos_step(t, freq_list)
+position = 80*numpy.cos(traj.phase(freq_step(t, freq_list), dt))
 plt.plot(t, position)
 plt.grid('on')
 plt.xlabel('t (sec)')
