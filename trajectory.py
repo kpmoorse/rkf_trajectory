@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 class Trajectory(object):
 
+    # Initialize parameters
     def __init__(self, t):
         self.t = t
         self.dt = numpy.diff(t)[0]
@@ -12,14 +13,17 @@ class Trajectory(object):
         self.phase = t * 0
         self.position = t * 0
 
+    # Set frequency profile and propagate through parameters
     def set_frequency(self, frequency, amplitude=1):
-        self.frequency = amplitude * frequency
-        self.calc_position()
+        self.frequency = frequency
+        self.calc_position(amplitude=amplitude)
 
+    # Return a constant frequency profile
     def sinusoid(self, freq):
         frequency = self.t * 0 + freq
         return frequency
 
+    # Return a stepwise constant frequency profile
     def stepwise(self, freq_list):
         step_ix = numpy.insert(numpy.cumsum([int(freq[0] / self.dt) for freq in freq_list]), 0, 0)
         frequency = self.t * 0
@@ -27,21 +31,25 @@ class Trajectory(object):
             frequency[step_ix[i]:step_ix[i + 1]] = freq_list[i][1]
         return frequency
 
+    # Return a triangular ramp frequency profile
     def freq_ramp(self, max_freq):
         tau = self.t[-1]
         frequency = max_freq * (1 - numpy.abs(2 * self.t / tau - 1))
         return frequency
 
+    # Calculate phase by integrating frequency
     def calc_phase(self):
         self.phase = numpy.cumsum(self.frequency) * self.dt
 
-    def calc_position(self, fun='cos'):
+    # Calculate position by
+    def calc_position(self, fun='cos', amplitude=1):
         self.calc_phase()
         if fun.lower() in ['cos', 'cosine']:
-            self.position = numpy.cos(self.phase)
+            self.position = amplitude * numpy.cos(self.phase)
         elif fun.lower() in ['sin', 'sine']:
-            self.position = numpy.sin(self.phase)
+            self.position = amplitude * numpy.sin(self.phase)
 
+    # Generate plots to visualize parameters
     def visualize(self):
         plt.subplot(3, 1, 1)
         plt.plot(self.t, self.frequency)
@@ -61,11 +69,7 @@ class Trajectory(object):
         plt.show()
 
 
-def phase(frequency, dt):
-    return numpy.cumsum(frequency)*dt
-
-
-t = numpy.arange(0, 30, 0.1)
+t = numpy.arange(0, 120, 0.01)
 trj = Trajectory(t)
-trj.set_frequency(trj.freq_ramp(5))
+trj.set_frequency(trj.stepwise([[20, 0.5*(x+1)] for x in range(6)]), 80)
 trj.visualize()

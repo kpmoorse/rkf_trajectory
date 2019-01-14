@@ -29,7 +29,7 @@ t = dt*scipy.arange(num_pts)
 
 # Calculate triangle-ramp frequency profile
 trj = trajectory.Trajectory(t)
-trj.set_frequency(trj.freq_ramp(3))
+trj.set_frequency(trj.freq_ramp(3), 80)
 
 position = trj.position
 plt.plot(t, position)
