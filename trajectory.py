@@ -65,7 +65,7 @@ def phase(frequency, dt):
     return numpy.cumsum(frequency)*dt
 
 
-t = numpy.arange(0, 30, 0.1)
-trj = Trajectory(t)
-trj.set_frequency(trj.freq_ramp(5))
-trj.visualize()
+# t = numpy.arange(0, 30, 0.1)
+# trj = Trajectory(t)
+# trj.set_frequency(trj.freq_ramp(5))
+# trj.visualize()
