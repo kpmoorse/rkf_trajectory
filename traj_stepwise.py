@@ -18,25 +18,27 @@ print()
 jog_params = {'speed': 200, 'accel': 500, 'decel': 500}
 max_params = {'speed': 1000, 'accel': 10000, 'decel': 10000}
 
-num_cycle = 6
-period = 5.0
+freq_list = [[10, 1], [10, 2], [10, 1]]
 
 # Create trajectory
 dt = AutostepProxy.TrajectoryDt
-num_pts = int(period*num_cycle/dt)
-t = dt*scipy.arange(num_pts)
+tau = sum([freq[0] for freq in freq_list])
+num_pts = int(tau/dt)
+t = dt*numpy.arange(num_pts)
 
 
-# Calculate triangle-wave freq ramp
-def cos_ramp(t, max_freq):
-    tau = t[-1]
-    frequency = max_freq * (1 - numpy.abs(2*t/tau - 1))
+# Calculate stepwise frequency profile
+def cos_step(t, freq_list):
+    step_ix = numpy.insert(numpy.cumsum([int(freq[0]/dt) for freq in freq_list]), 0, 0)
+    frequency = t * 0
+    for i in range(len(freq_list)):
+        frequency[step_ix[i]:step_ix[i+1]] = freq_list[i][1]
     phase = numpy.cumsum(frequency)*dt
-    x = 80*scipy.cos(phase)
+    x = 80*numpy.cos(phase)
     return x
 
 
-position = cos_ramp(t, 3)
+position = cos_step(t, freq_list)
 plt.plot(t, position)
 plt.grid('on')
 plt.xlabel('t (sec)')
