@@ -69,18 +69,7 @@ class Trajectory(object):
         plt.show()
 
 
-<<<<<<< HEAD
-t = numpy.arange(0, 120, 0.01)
-trj = Trajectory(t)
-trj.set_frequency(trj.stepwise([[20, 0.5*(x+1)] for x in range(6)]), 80)
-trj.visualize()
-=======
-def phase(frequency, dt):
-    return numpy.cumsum(frequency)*dt
-
-
-# t = numpy.arange(0, 30, 0.1)
+# t = numpy.arange(0, 120, 0.01)
 # trj = Trajectory(t)
-# trj.set_frequency(trj.freq_ramp(5))
+# trj.set_frequency(trj.stepwise([[20, 0.5*(x+1)] for x in range(6)]), 80)
 # trj.visualize()
->>>>>>> cd5e3fa143116a78c4123a3e0ff2ad37a636cc39
