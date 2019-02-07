@@ -6,9 +6,16 @@ import scipy
 import numpy
 import matplotlib.pyplot as plt
 import trajectory
+import argparse
 
 from autostep_proxy import AutostepProxy
 
+
+# Initialize argument parser
+parser = argparse.ArgumentParser(description='Stepwise Trajectory')
+parser.add_argument('-t', type=float, nargs='+',
+                    help='List of trajectory parameters')
+args = parser.parse_args()
 
 autostep = AutostepProxy()
 
@@ -19,7 +26,12 @@ print()
 jog_params = {'speed': 200, 'accel': 500, 'decel': 500}
 max_params = {'speed': 1000, 'accel': 10000, 'decel': 10000}
 
-freq_list = [[10, 1], [10, 2], [10, 1]]
+# Read trajectory params from command line or use default
+if args.t:
+    assert len(args.t) % 2 == 0
+    freq_list = [args.t[i:i+2] for i in range(0, len(args.t), 2)]
+else:
+    freq_list = [[10, 1], [10, 2], [10, 1]]
 
 # Create trajectory
 dt = AutostepProxy.TrajectoryDt

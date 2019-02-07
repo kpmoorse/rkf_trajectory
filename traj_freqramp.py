@@ -6,9 +6,17 @@ import scipy
 import numpy
 import matplotlib.pyplot as plt
 import trajectory
+import argparse
 
 from autostep_proxy import AutostepProxy
 
+# Initialize argument parser
+parser = argparse.ArgumentParser(description='Stepwise Trajectory')
+parser.add_argument('-d', type=float,
+                    help='Trajectory duration (sec)')
+parser.add_argument('-f', type=float,
+                    help='Maximum trajectory frequency')
+args = parser.parse_args()
 
 autostep = AutostepProxy()
 
@@ -19,17 +27,19 @@ print()
 jog_params = {'speed': 200, 'accel': 500, 'decel': 500}
 max_params = {'speed': 1000, 'accel': 10000, 'decel': 10000}
 
-num_cycle = 6
-period = 5.0
+# num_cycle = 6
+# period = 5.0
+duration = args.d if args.d else 60*2  # sec
+fmax = args.f if args.f else 3
 
 # Create trajectory
 dt = AutostepProxy.TrajectoryDt
-num_pts = int(period*num_cycle/dt)
+num_pts = int(duration/dt)
 t = dt*scipy.arange(num_pts)
 
 # Calculate triangle-ramp frequency profile
 trj = trajectory.Trajectory(t)
-trj.set_frequency(trj.freq_ramp(3), 80)
+trj.set_frequency(trj.freq_ramp(fmax), 80)
 
 position = trj.position
 plt.plot(t, position)
