@@ -39,9 +39,10 @@ num_pts = int(duration/dt)
 t = dt*scipy.arange(num_pts)
 
 # Calculate x such that the fourier transform of dx/dt is a square wave
-f = lambda x, f1, f2: 1/(2*np.pi*1j*x) * (np.exp(2*np.pi*1j*x*f1) - np.exp(2*np.pi*1j*x*f2))
-velocity = f(t, f[0], f[1])
-position = np.cumsum(velocity, dt)
+e = dt/10
+ifft_square = lambda x, f1, f2: 1/(2*np.pi*1j*x+e) * (np.exp(2*np.pi*1j*x*f1) - np.exp(2*np.pi*1j*x*f2))
+velocity = ifft_square(t, f[0], f[1]).real
+position = np.cumsum(velocity) * dt
 
 plt.plot(t, position)
 plt.grid('on')
