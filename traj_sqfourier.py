@@ -43,21 +43,30 @@ t = dt*scipy.arange(num_pts)
 
 
 # Smoothly log-truncate large values in an array
-def loglim(y, y0=0):
+def lognorm(y, a=0, A=None):
 
     y = np.array(y).astype(float)
-    a = y.copy()
-    lg = np.array(np.abs(y) > y0).astype(bool)
-    a[lg] = np.sign(y[lg]) * (y0 + np.log(abs(y[lg]) - y0 + 1))
+    b = max(np.abs(y))
+    if not A:
+        A = b
 
-    return a
+    vec = y.copy() / b
+    lg = np.array(np.abs(vec) > a).astype(bool)
+    vec[lg] = np.sign(y[lg]) * (a + np.log(abs(vec[lg] - a) + 1))
+    vec = A/max(abs(vec)) * vec
+
+    return vec
 
 
 # Calculate x such that the fourier transform of dx/dt is a square wave
-e = dt/10
-ifft_square = lambda x, f1, f2: 1/(2*np.pi*1j*x+e) * (np.exp(2*np.pi*1j*x*f1) - np.exp(2*np.pi*1j*x*f2))
+def ifft_square(t, f1, f2):
+    e = (t[1] - t[0]) / 10
+    return 1/(2*np.pi*1j*(t+e)) * (np.exp(2*np.pi*1j*(t+e)*f1) - np.exp(2*np.pi*1j*(t+e)*f2))
+
+
 velocity = ifft_square(t - max(t)/2, f[0], f[1]).real
-position = loglim(A * np.cumsum(velocity) * dt, 0)
+position = np.cumsum(velocity) * dt
+position = lognorm(position, A=A)
 
 plt.plot(t, position)
 plt.grid('on')
