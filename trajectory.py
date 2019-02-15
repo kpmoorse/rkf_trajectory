@@ -21,7 +21,7 @@ class Trajectory(object):
     # Return a constant frequency profile
     def sinusoid(self, freq):
         frequency = self.t * 0 + freq
-        return frequency
+        return 2*numpy.pi*frequency
 
     # Return a stepwise constant frequency profile
     def stepwise(self, freq_list):
@@ -29,13 +29,13 @@ class Trajectory(object):
         frequency = self.t * 0
         for i in range(len(freq_list)):
             frequency[step_ix[i]:step_ix[i + 1]] = freq_list[i][1]
-        return frequency
+        return 2*numpy.pi*frequency
 
     # Return a triangular ramp frequency profile
     def freq_ramp(self, max_freq):
         tau = self.t[-1]
         frequency = max_freq * (1 - numpy.abs(2 * self.t / tau - 1))
-        return frequency
+        return 2*numpy.pi*frequency
 
     # Calculate phase by integrating frequency
     def calc_phase(self):

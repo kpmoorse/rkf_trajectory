@@ -11,13 +11,14 @@ import argparse
 from autostep_proxy import AutostepProxy
 
 # Initialize argument parser
-# Initialize argument parser
 parser = argparse.ArgumentParser(description='Square-Fourier Trajectory')
-parser.add_argument('-d', type=float,
+parser.add_argument('-d', '--dur', dest='duration', type=float,
                     help='Trajectory duration (sec)')
-parser.add_argument('-f', type=float, nargs=2,
+parser.add_argument('-r', '--rep', dest='repetitions', type=float,
+                    help='Number of repetitions (runtime = dur * rep)')
+parser.add_argument('-f', '--frq', dest='frequency', type=float, nargs=2,
                     help='Pair of frequency endpoints')
-parser.add_argument('-a', type=float,
+parser.add_argument('-a', '--amp', dest='amplitude', type=float,
                     help='Scaled trajectory amplitude (deg)')
 args = parser.parse_args()
 
@@ -32,9 +33,10 @@ max_params = {'speed': 1000, 'accel': 10000, 'decel': 10000}
 
 # num_cycle = 6
 # period = 5.0
-duration = args.d if args.d else 60  # sec
-f = args.f if args.f else [1, 2]
-A = args.a if args.a else 80
+duration = args.duration if args.duration else 60  # sec
+reps = args.repetitions if args.repetitions else 1
+f = args.frequency if args.frequency else [1, 2]
+A = args.amplitude if args.amplitude else 80
 
 # Create trajectory
 dt = AutostepProxy.TrajectoryDt
@@ -42,7 +44,7 @@ num_pts = int(duration/dt)
 t = dt*scipy.arange(num_pts)
 
 
-# Smoothly log-truncate large values in an array
+# Smoothly log-truncate large values in an array and scale
 def lognorm(y, a=0, A=None):
 
     y = np.array(y).astype(float)
