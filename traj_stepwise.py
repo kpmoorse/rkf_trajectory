@@ -7,6 +7,7 @@ import numpy
 import matplotlib.pyplot as plt
 import trajectory
 import argparse
+import rospy
 
 from autostep_proxy import AutostepProxy
 
@@ -31,7 +32,9 @@ if args.t:
     assert len(args.t) % 2 == 0
     freq_list = [args.t[i:i+2] for i in range(0, len(args.t), 2)]
 else:
-    freq_list = [[10, 1], [10, 2], [10, 1]]
+    freq_list = [[10, 0.1], [10, 0.3], [10, 0.5]]
+
+freq_pub = rospy.Publisher("/autostep/frequency")
 
 # Create trajectory
 dt = AutostepProxy.TrajectoryDt
@@ -43,6 +46,7 @@ t = dt*numpy.arange(num_pts)
 trj = trajectory.Trajectory(t)
 trj.set_frequency(trj.stepwise(freq_list), 80)
 
+# Display trajectory plot
 position = trj.position
 plt.plot(t, position)
 plt.grid('on')
@@ -51,16 +55,23 @@ plt.ylabel('position (deg)')
 plt.title('Trajectory')
 plt.show()
 
+# Initialize to zero-point
 print('  move to start position')
 autostep.set_move_mode('jog')
 autostep.move_to(position[0])
 autostep.busy_wait()
 time.sleep(1.0)
 
+# Loop over stepwise chunks
 print('  running trajectory ...', end='')
 sys.stdout.flush()
 autostep.set_move_mode('max')
-autostep.run_trajectory(position)
+for i, freq in enumerate(freq_list):
+    start = int(sum([x[0] for x in freq_list[:i]]) / dt)
+    end = int(sum([x[0] for x in freq_list[:i+1]]) / dt)
+    rng = range(start, end)
+    freq_pub.publish(freq[1])
+    autostep.run_trajectory(position[rng])
 autostep.busy_wait()
 print('  done')
 time.sleep(1.0)
