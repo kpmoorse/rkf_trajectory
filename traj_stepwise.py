@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import trajectory
 import argparse
 import rospy
+from std_msgs.msg import Float64
 
 from autostep_proxy import AutostepProxy
 
@@ -34,7 +35,8 @@ if args.t:
 else:
     freq_list = [[10, 0.1], [10, 0.3], [10, 0.5]]
 
-freq_pub = rospy.Publisher("/autostep/frequency")
+rospy.init_node('freq_counter')
+freq_pub = rospy.Publisher('frequency', Float64)
 
 # Create trajectory
 dt = AutostepProxy.TrajectoryDt
