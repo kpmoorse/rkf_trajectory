@@ -36,7 +36,7 @@ else:
     freq_list = [[10, 0.1], [10, 0.3], [10, 0.5]]
 
 rospy.init_node('freq_counter')
-freq_pub = rospy.Publisher('frequency', Float64)
+freq_pub = rospy.Publisher(rospy.resolve_name("~frequency"), Float64, queue_size=10)
 
 # Create trajectory
 dt = AutostepProxy.TrajectoryDt
@@ -68,13 +68,17 @@ time.sleep(1.0)
 print('  running trajectory ...', end='')
 sys.stdout.flush()
 autostep.set_move_mode('max')
+
 for i, freq in enumerate(freq_list):
+
     start = int(sum([x[0] for x in freq_list[:i]]) / dt)
     end = int(sum([x[0] for x in freq_list[:i+1]]) / dt)
     rng = range(start, end)
+
     freq_pub.publish(freq[1])
     autostep.run_trajectory(position[rng])
-autostep.busy_wait()
+    autostep.busy_wait()
+
 print('  done')
 time.sleep(1.0)
 autostep.set_move_mode('jog')
