@@ -46,7 +46,7 @@ t = dt*numpy.arange(num_pts)
 
 # Calculate stepwise frequency profile
 trj = trajectory.Trajectory(t)
-trj.set_frequency(trj.stepwise(freq_list), 80)
+trj.set_frequency(trj.stepwise(freq_list), 80, rnd=True)
 
 # Display trajectory plot
 position = trj.position

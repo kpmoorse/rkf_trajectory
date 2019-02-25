@@ -1,5 +1,6 @@
 import numpy
 import matplotlib.pyplot as plt
+import random
 
 
 class Trajectory(object):
@@ -24,7 +25,9 @@ class Trajectory(object):
         return 2*numpy.pi*frequency
 
     # Return a stepwise constant frequency profile
-    def stepwise(self, freq_list):
+    def stepwise(self, freq_list, rnd=False):
+        if rnd:
+            random.shuffle(freq_list)
         step_ix = numpy.insert(numpy.cumsum([int(freq[0] / self.dt) for freq in freq_list]), 0, 0)
         frequency = self.t * 0
         for i in range(len(freq_list)):
