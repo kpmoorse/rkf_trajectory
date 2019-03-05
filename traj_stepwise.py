@@ -19,8 +19,7 @@ parser.add_argument('-t', '--traj', metavar='TRAJECTORY', type=float, nargs='+',
                     help='List of trajectory parameters; format = t f [t f [...')
 parser.add_argument('-r', '--rng', metavar='RANGE', type=float, nargs='+',
                     help='Frequency range parameters; format = t [start] stop [step]')
-parser.add_argument('-p', '--pre', metavar='PREVIEW', type=bool,
-                    help='Boolean checking whether to preview trajectory; default = True')
+parser.add_argument('--nopre', dest='nopre', action='store_true')
 args = parser.parse_args()
 
 autostep = AutostepProxy()
@@ -44,11 +43,7 @@ elif args.rng:
     assert len(args.rng) in [1, 2, 3]
     freq_list = [[t, i] for i in numpy.arange(*args.rng)]
 
-if args.pre is None:
-    preview = True
-else:
-    preview = args.pre
-
+preview = False if args.nopre else True
 print(freq_list)
 
 rospy.init_node('freq_counter')
@@ -66,12 +61,13 @@ trj.set_frequency(trj.stepwise(freq_list, rnd=True), 80)
 
 # Display trajectory plot
 position = trj.position
-plt.plot(t, position)
-plt.grid('on')
-plt.xlabel('t (sec)')
-plt.ylabel('position (deg)')
-plt.title('Trajectory')
-plt.show()
+if preview:
+    plt.plot(t, position)
+    plt.grid('on')
+    plt.xlabel('t (sec)')
+    plt.ylabel('position (deg)')
+    plt.title('Trajectory')
+    plt.show()
 
 # Initialize to zero-point
 print('  move to start position')
