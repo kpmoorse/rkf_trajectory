@@ -17,7 +17,7 @@ from autostep_proxy import AutostepProxy
 parser = argparse.ArgumentParser(description='Stepwise Trajectory')
 parser.add_argument('-t', '--traj', metavar='TRAJECTORY', type=float, nargs='+',
                     help='List of trajectory parameters; format = t f [t f [...')
-parser.add_argument('-r', '--rng', metavar='RANGE', type=float, nargs=2,
+parser.add_argument('-r', '--rng', metavar='RANGE', type=float, nargs='+',
                     help='Frequency range parameters; format = t [start] stop [step]')
 args = parser.parse_args()
 
@@ -30,7 +30,7 @@ print()
 jog_params = {'speed': 200, 'accel': 500, 'decel': 500}
 max_params = {'speed': 1000, 'accel': 10000, 'decel': 10000}
 
-assert args.traj ^ args.rng, "Arguments must be TRAJECTORY or LOOP but not both"
+assert bool(args.traj) ^ bool(args.rng), "Arguments must be TRAJECTORY or LOOP but not both"
 
 # Read trajectory params from command line or use default
 if args.traj:
@@ -41,6 +41,8 @@ elif args.rng:
     args.rng = args.rng[1:]
     assert len(args.rng) in [1, 2, 3]
     freq_list = [[t, i] for i in numpy.arange(*args.rng)]
+
+print(freq_list)
 
 rospy.init_node('freq_counter')
 freq_pub = rospy.Publisher(rospy.resolve_name("~frequency"), Float64, queue_size=10)
