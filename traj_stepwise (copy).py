@@ -66,12 +66,14 @@ trj.set_frequency(trj.stepwise(freq_list, rnd=True), 80)
 
 # Display trajectory plot
 position = trj.position
-plt.plot(t, position)
-plt.grid('on')
-plt.xlabel('t (sec)')
-plt.ylabel('position (deg)')
-plt.title('Trajectory')
-plt.show()
+
+if preview:
+    plt.plot(t, position)
+    plt.grid('on')
+    plt.xlabel('t (sec)')
+    plt.ylabel('position (deg)')
+    plt.title('Trajectory')
+    plt.show()
 
 # Initialize to zero-point
 print('  move to start position')
